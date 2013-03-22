@@ -7,6 +7,7 @@ class TodoList
     else
       @items = items
       @status = {}
+			@status,keys
       @items.each do | item |
         @status[item] = false
       end
@@ -109,7 +110,8 @@ class TodoList
 
   def toogle_state(index)
     p @status[@items[index]]
-    @status[@items[index]] ? @status[@items[index]] = false : @status[@items[index]] = true
+    @status[@items[index]] ? @status[@items[index]] = false : 
+@status[@items[index]] = true
   end
 
   def [] (index)
