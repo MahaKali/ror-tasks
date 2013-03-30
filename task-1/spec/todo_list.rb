@@ -58,7 +58,7 @@ describe TodoList do
   
   context "with items" do
     before:each do
-      list.new
+      list.reset
       list << "Example 1"
       list << "Example 2"
       list << "An Example 3"
@@ -66,7 +66,8 @@ describe TodoList do
       list.complete(2)
       list.complete(3)
     end
-    it { should_not be_empty }
+
+		it { should_not be_empty }
 
     it "should have size more than 1" do
       list.size.should > 1
@@ -83,8 +84,8 @@ describe TodoList do
     end
 
     it "should remove an individual item" do
-#      list.remove_item(0)
-#      list.first.should == "Example 1"
+      list.remove_item(0)
+      list.first.should == "Example 2"
     end
 
     it "should remove all completed items" do
@@ -103,9 +104,9 @@ describe TodoList do
 
     it "should toggle the state of an item" do
       list.completed?(0).should == false
-      list.toogle_state(0)
+      list.toggle_state(0)
       list.completed?(0).should == true
-      list.toogle_state(0)
+      list.toggle_state(0)
       list.completed?(0).should == false
     end
 
@@ -125,7 +126,7 @@ describe TodoList do
     end
 
     it "should convert the list to text" do
-      list.convert
+      list.convert.should ==  "- [ ] " + list[0] + "\n- [ ] " + list[1] + "\n- [x] " + list[2] + "\n- [x] " + list[3] 
     end
   end
 end

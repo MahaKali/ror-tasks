@@ -7,7 +7,6 @@ class TodoList
     else
       @items = items
       @status = {}
-			@status,keys
       @items.each do | item |
         @status[item] = false
       end
@@ -22,9 +21,9 @@ class TodoList
     @items.empty?
   end
 
-  def <<(other_object)
-    @items << other_object
-    @status[other_object] = false
+  def <<(item)
+    @items << item
+    @status[item] = false
   end
   
   def last()
@@ -60,42 +59,33 @@ class TodoList
   def return_uncompleted()
     returned = []
     @items.each do | item |
-     if @status[item] == false
-       returned << item
-     end
+    	if @status[item] == false
+      	returned << item
+    	end
     end
     returned
   end
 
   def remove_item(index)
-    @items.delete(index)
+		a = @items[index]
+    @items.delete_at(index)
+		@status.delete(a)
   end
 
   def remove_completed()
-    list_to_remove = []
-    @items.each do | item |
-      if @status[item] == true
-        list_to_remove << item
-        # @items.delete(item)
-      end
-    end
-    list_to_remove.each do | item |
-      @items.delete(item)
-    end
-    p @items
+		@items.delete_if { |item| @status[item] == true }	
   end      
   
   def switch_items(first = nil, second = nil)
     if first == nil && second == nil
       items = []
+
       while @items.empty?
         items.first = @items.shift
       end
       @items = items
     else
-      tmp = @items[first]
-      @items[first] = @items[second]
-      @items[second] = tmp
+      @items[first], @items[second] = @items[second], @items[first]
     end
   end
 
@@ -103,30 +93,28 @@ class TodoList
     @items.sort!()
   end
 
-  def new()
+  def reset()
     @items = []
     @status = {}
   end
 
-  def toogle_state(index)
-    p @status[@items[index]]
-    @status[@items[index]] ? @status[@items[index]] = false : 
-@status[@items[index]] = true
-  end
+  def toggle_state(index)
+    @status[@items[index]] ? @status[@items[index]] = false : @status[@items[index]] = true
+	end
 
   def [] (index)
     @items[index]
   end
 
-  def []= (index,other_object)
-    @items[index] = other_object
+  def []= (index,item)
+    @items[index] = item
   end
   
   def convert()
+		converted = ""
     @items.each do | item |
-      print @status[item] ? "- [x] " + item.to_s + "\n" : "- [ ] " + item.to_s + "\n" 
+      converted += @status[item] ? "- [x] " + item.to_s + "\n" : "- [ ] " + item.to_s + "\n" 
     end
-
+		converted[0..-2]
   end
-
 end
