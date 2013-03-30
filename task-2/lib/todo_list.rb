@@ -1,71 +1,60 @@
 class TodoList
 
-  # Initialize the TodoList with +items+ (empty by default).
-  def initialize(items=nil)
-    if items[:db] == nil
-      raise IllegalArgument
-    else
-      @database = items[:db]
-			@network = items[:social_network]
-		end
-  end
+	# Initialize the TodoList with +items+ (empty by default).
+	def initialize(items=nil)
+		raise IllegalArgument if items[:db] == nil
+      
+		@database = items[:db]
+		@network = items[:social_network]
+	end
 
-  def empty?()
-    @database.items_count == 0
-  end
+	def empty?()
+		@database.items_count == 0
+	end
  
-  def size()
-    @database.items_count
-  end 
+	def size()
+		@database.items_count
+	end 
 
-  def <<(other_object)
-    if other_object == nil or other_object[:title] == "" or	other_object[:title].size < 3
-			nil
-		else
-			# other_object[:title] = other_object[:title][0...255]
-      cut_title(other_object)
-			
-			@database.add_todo_item(other_object)
-			if @network
-				if other_object[:description] == ""
-					@network.spam("[" + other_object[:title] + "] missing description")
-				else
-					@network.spam("[" + other_object[:title] + "] I am going to " + other_object[:description])
-				end
-			end
+	def <<(item)
+		return nil if item == nil || item[:title] == "" ||	item[:title].size < 3
+		
+		short_title = cut_title(item)
+		@database.add_todo_item(item)
+
+		if @network
+			suffix = "] I am going to " + item[:description]
+			suffix = "] missing description" if item[:description].nil? || item[:description].empty?
+			title = "[" + short_title 
+				 
+			@network.spam(title + suffix)
 		end
-  end
+	end
 
 	def first()
-		if @database == nil
-			nil
-		else
-    	@database.get_todo_item(0)
-		end
-  end
+		first = @database.get_todo_item(0)
+		return nil if first == nil
+		first
+	end
 
-  def last()
-    if self.size > 0
-      @database.get_todo_item(self.size - 1)
-    else
-      nil
-    end
-  end
+	def last()
+		return nil if self.size <= 0
+		@database.get_todo_item(self.size - 1)
+	end
 
-  def toggle_state(index)
+	def toggle_state(index)
 		item = @database.get_todo_item(index)
-		if item == nil
-			raise IllegalArgument
-		else
-			# item[:title] = item[:title][0...255]
-			cut_title(item)
+
+		raise IllegalArgument if item == nil
+		short_title = cut_title(item)
 			
-			@database.todo_item_completed?(index) ? @database.complete_todo_item(index, false) : @database.complete_todo_item(index, true)
-   		@network.spam("[" + item[:title] + "] " + item[:description] + " is done") if @network
-	  end
+		@database.todo_item_completed?(index) ? @database.complete_todo_item(index, false) : @database.complete_todo_item(index, true)
+   	@network.spam("[" + short_title + "] " + item[:description] + " is done") if @network
 	end
 	
+	protected 
+	
 	def cut_title(item)
-		item[:title] = item[:title][0...255]
+		return item[:title][0...255]
 	end
 end

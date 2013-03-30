@@ -44,8 +44,7 @@ describe TodoList do
     mock(database).complete_todo_item(0,true) { true }
     mock(database).todo_item_completed?(0) { true }
     mock(database).complete_todo_item(0,false) { true }
-
-    list.toggle_state(0)
+		list.toggle_state(0)
     
 		mock(database).get_todo_item(0) { item }
 		list.toggle_state(0)
@@ -71,9 +70,9 @@ describe TodoList do
 
   it "should return nil for the first and the last item if the db is empty" do
     stub(database).items_count { 0 }
-
-    mock(database).get_todo_item(0) { nil } 
-    list.first.should == nil
+		mock(database).get_todo_item(0) { nil } 
+    
+		list.first.should == nil
     list.last.should == nil
   end
 
@@ -90,11 +89,10 @@ describe TodoList do
 	context "with nil item" do
 		let(:item) { nil }
 		
-
 		it "should raise an exception when changing the item state if the item is nil" do
 			mock(database).get_todo_item(0) { item }
 			
-			expect{ list.toggle_state(0)}.to raise_error(IllegalArgument)
+			expect{ list.toggle_state(0) }.to raise_error(IllegalArgument)
 		end
 
 		it "should not accept a nil item" do
@@ -115,7 +113,7 @@ describe TodoList do
 	end
 	
   context "with missing description" do
-		let(:description) {}
+		let(:description) { nil }
 			
 		it "should accept an item with missing description" do
 			mock(database).add_todo_item(item) { true } 
@@ -128,15 +126,17 @@ describe TodoList do
 		let(:network)						{ stub! }
 		let(:add_prefix)				{ "I am going to " }
 		let(:complete_suffix)		{ " is done" }
+		let(:add_title)					{ "[" + title + "] " }
 
 	  it "should notify social network if an item is added to the list" do
 			mock(database).add_todo_item(item) { true }
-			mock(network).spam("[" + title + "] " + add_prefix + description) { true }
+			mock(network).spam(add_title + add_prefix + description) { true }
+			
 			list << item
 		end
 
 		it "should notify social network if an item is completed" do
-			mock(network).spam("[" + title + "] " + description + complete_suffix) { true }
+			mock(network).spam(add_title + description + complete_suffix) { true }
 			
 			mock(database).get_todo_item(0) { item }
 			mock(database).todo_item_completed?(0) { false }
@@ -150,6 +150,7 @@ describe TodoList do
 
 			it "should not notify social network if the title od the item is missing" do
 				dont_allow(network).spam
+
 				list << item
 			end
 		end
@@ -159,22 +160,25 @@ describe TodoList do
 
 			it "should notify social network if the body of the item is missing" do
 				mock(database).add_todo_item(item) { true }
-				mock(network).spam("[" + title + "] missing description") { true }
+				mock(network).spam(add_title + "missing description") { true }
+				
 				list << item
 			end
 		end
 
 		context "with too long title" do
-			let(:title) { "q"*256 }
+			let(:title)						 		{ "q"*256 }
+			let(:add_short_title)			{ "[" + title[0...255] + "] " }
 
-			it "should cut the title of the item when notifying social network about added item if it is longer than 255 chars" do
+			it "should cut the title longer than 255 chars when item is added" do
 				mock(database).add_todo_item(item) { true }
-				mock(network).spam("[" + title[0...255] + "] " + add_prefix + description) { true }
+				mock(network).spam(add_short_title + add_prefix + description) { true }
+				
 				list << item
 			end
 
-			it "should cut thetitle of the item when notifying social network about completed item if it is longer than 255 chars" do
-				mock(network).spam("[" + title[0...255] + "] " + description + complete_suffix) { true }
+			it "should cut the title longer than 255 chars when item is completed" do
+				mock(network).spam(add_short_title + description + complete_suffix) { true }
 
 				mock(database).get_todo_item(0) { item }
 				mock(database).todo_item_completed?(0) { false }
