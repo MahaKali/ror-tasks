@@ -3,7 +3,7 @@ require_relative 'test_helper'
 describe "virtual wallet" do
 	include WalletTestHelper
 
-	before.each do
+	before(:each) do
 	  set_balance :pln => 100, :f01 => 15
 	end
 

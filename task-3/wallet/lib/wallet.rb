@@ -1,0 +1,6 @@
+require 'wallet/account.rb'
+require 'wallet/exchanger.rb'
+require 'stock_price.rb'
+require 'exchange_rate.rb'
+require 'stocker.rb'
+require 'supplier.rb'
