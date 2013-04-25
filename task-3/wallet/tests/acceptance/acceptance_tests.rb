@@ -4,8 +4,7 @@ describe "virtual wallet" do
 	include WalletTestHelper
 
 	before.each do
-	  set_balance :pln => 100
-		set_stock_balance :f01 => 15
+	  set_balance :pln => 100, :f01 => 15
 	end
 
 	specify "supplying money in defined currency" do
@@ -31,17 +30,17 @@ describe "virtual wallet" do
 	end
 
 	specify "buying stock" do
-		set_stock_rate :f02 => 3
+		set_stock_price :f02 => 3
 		buy_stock(:f02, 10)
-		get_stock_balance(:f01).should == 15
-		get_stock_balance(:f02).should == 10
+		get_balance(:f01).should == 15
+		get_balance(:f02).should == 10
 		get_balance(:pln).should == 70
 	end
 
 	specify "selling stock" do
-		set_stock_rate :f01 => 5
+		set_stock_price :f01 => 5
 		sell_stock(:f01,5)
-		get_stock_balance(:f01).should == 10
+		get_balance(:f01).should == 10
 		get_balance(:pln).should == 125
 	end
 
@@ -60,16 +59,16 @@ describe "virtual wallet" do
 		end
 
 		specify "buying stock" do
-			set_stock_rate :f02 => 30
+			set_stock_price :f02 => 30
 			buy_stock(:f02,5)
-			get_stock_balance(:f02).should == 3
+			get_balance(:f02).should == 3
 			get_balance(:pln).should == 10
 		end
 
 		specify "selling stock" do
-			set_stock_rate :f01 => 5
+			set_stock_price :f01 => 5
 			sell_stock(:f01,20)
-			get_stock_balance(:f01).should == 0
+			get_balance(:f01).should == 0
 			get_balance(:pln).should == 175
 		end
 	end 

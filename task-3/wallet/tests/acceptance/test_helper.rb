@@ -3,17 +3,12 @@ class Account
 	end
 end
 
-class StockAccount
-	def initialize(name,amount)
-	end
-end
-
 class ExchangeRate
 	def initialize(from_currency,to_currency,value)
 	end
 end
 
-class StockRate
+class StockPrice
 	def initialize(name,price)
 	end
 end
@@ -36,15 +31,8 @@ end
 module WalletTestHelper
 	def set_balance(accounts)
 		@accounts ||= []
-		accounts.each do |currency,balance|
-			@accounts << Account.new(currency,balance)
-		end
-	end
-	
-	def set_stock_balance(stock_accounts)
-		@stock_accounts ||= []
-		stock_accounts.each do |name,amount|
-			@stock_accounts << StockAccount.new(name,amount)
+		accounts.each do |name,balance|
+			@accounts << Account.new(name,balance)
 		end
 	end
 
@@ -55,10 +43,10 @@ module WalletTestHelper
 		end
 	end
 
-	def set_stock_rate(stock_rate)
-		@stock_rate ||= []
-		stock_rate do |name, price|
-			@stock_rate << StockRate.new(name, price)
+	def set_stock_price(stock_price)
+		@stock_price ||= []
+		stock_price do |name, price|
+			@stock_price << StockPrice.new(name, price)
 		end
 	end
 
@@ -72,30 +60,22 @@ module WalletTestHelper
 		find_account(currency).balance
 	end
 	
-	def get_stock_balance(name)
-		find_stock_account(name).balance
-	end
-
 	def find_account(currency)
 		@accounts.find{|a| a.currency == account }
 	end
 	
-	def find_stock_account(name)
-		@stock_accounts.find{|a| a.name == account }
-	end
-
 	def find_rate(from_currency,to_currency)
 		@rates.find{|r| r.from_currency == from_currency && r.to_currency == to_currency }
 	end
 
 	def sell_stock(name,amount)
-		@amount ||= get_stock_balance(:name)
-		stocker = Stocker.new(find_account(name), find_stock_rate(name))
+		@amount ||= get_balance(:name)
+		stocker = Stocker.new(find_account(name), find_stock_price(name))
 		stocker.sell(amount)
 	end
 
 	def buy_stock(name,amount)
-		stocker = Stocker.new(find_stock_rate(name))
+		stocker = Stocker.new(find_stock_price(name))
 		stocker.buy(amount)
 	end
 
