@@ -1,41 +1,21 @@
-class Account
-	def initialize(currency,value)
-	end
-end
-
-class ExchangeRate
-	def initialize(from_currency,to_currency,value)
-	end
-end
-
-class StockPrice
-	def initialize(name,price)
-	end
-end
-
-class Exchanger
-	def initialize(source_account,target_account,rate)
-	end
-end
-
-class Stocker
-	def initialize(stock_account,rate)
-	end
-end
-
-class Supplier
-	def initialize(currency,value)
-	end
-end
+require_relative '../../lib/wallet'
 
 module WalletTestHelper
 	def set_balance(accounts)
 		@accounts ||= []
-		accounts.each do |name,balance|
-			@accounts << Account.new(name,balance)
+		accounts.each do |currency,balance|
+			@accounts << Account.new(currency,balance)
 		end
 	end
 
+
+	def set_stock_balance(accounts)
+		@accounts ||= []
+		accounts.each do |name,amount|
+			@accounts << Account.new(name,amount)
+		end
+	end
+	
 	def set_exchange_rate(rates)
 		@rates ||= []
 		rates.each do |(from_currency, to_curency), rate|
@@ -59,6 +39,10 @@ module WalletTestHelper
 	def get_balance(currency)
 		find_account(currency).balance
 	end
+
+	def get_stock_balance(name)
+		find_account(name).balance
+	end
 	
 	def find_account(currency)
 		@accounts.find{|a| a.currency == account }
@@ -69,7 +53,7 @@ module WalletTestHelper
 	end
 
 	def sell_stock(name,amount)
-		@amount ||= get_balance(:name)
+		@amount ||= get_balance(name)
 		stocker = Stocker.new(find_account(name), find_stock_price(name))
 		stocker.sell(amount)
 	end
@@ -80,7 +64,7 @@ module WalletTestHelper
 	end
 
 	def supply_money(currency,amount)
-		supplier = Supplier.new(find_account(:currency))
+		supplier = Supplier.new(find_account(currency))
 		supplier.supply(amount)
 	end
 end
